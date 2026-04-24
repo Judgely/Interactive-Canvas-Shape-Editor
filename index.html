@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Interactive Canvas Shape Editor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #ffffff;
+      --surface:   #f5f5f5;
+      --border:    #dddddd;
+      --accent:    #1565c0;
+      --accent2:   #c62828;
+      --text:      #111111;
+      --muted:     #555555;
+      --mono:      'Share Tech Mono', monospace;
+      --sans:      'Rajdhani', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      padding: 0 0 40px;
+    }
+
+    /* Header */
+    header {
+      background: var(--surface);
+      border-bottom: 2px solid var(--border);
+      padding: 28px 40px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent));
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 6px 32px;
+      max-width: 960px;
+    }
+    .profile-row {
+      display: flex;
+      gap: 8px;
+      align-items: baseline;
+      font-size: 13px;
+    }
+    .profile-row .label {
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: 11px;
+      white-space: nowrap;
+      min-width: 80px;
+    }
+    .profile-row .value {
+      color: var(--text);
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    /* Page Title */
+    .page-title {
+      text-align: center;
+      padding: 28px 20px 8px;
+    }
+    .page-title h1 {
+      font-family: var(--mono);
+      font-size: clamp(16px, 3vw, 22px);
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .page-title p {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 6px;
+      font-family: var(--mono);
+    }
+
+    /* Controls Bar */
+    .controls {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 12px 20px;
+    }
+    .kbd-hint {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .kbd-hint span {
+      background: var(--border);
+      border-radius: 4px;
+      padding: 2px 7px;
+      color: var(--accent);
+      font-size: 11px;
+    }
+
+    /* Canvas Wrapper */
+    .canvas-wrapper {
+      display: flex;
+      justify-content: center;
+      padding: 10px 20px 0;
+    }
+
+    #myCanvas {
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      background: #ffffff;
+      cursor: crosshair;
+      display: block;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+      width: 100%;
+      max-width: 760px;
+      height: 420px;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      padding: 10px 20px 0;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      flex-wrap: wrap;
+    }
+    .status-bar .stat {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status-bar .stat-val {
+      color: var(--accent);
+      font-weight: bold;
+    }
+    #statusMsg {
+      color: var(--accent2);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="profile-grid">
+      <div class="profile-row">
+        <span class="label">NAME</span>
+        <span class="value">Judgely P. Fermato</span>
+      </div>
+      <div class="profile-row">
+        <span class="label">SEX</span>
+        <span class="value">Male</span>
+      </div>
+      <div class="profile-row">
+        <span class="label">ADDRESS</span>
+        <span class="value">San Rafael, Lagonoy, Camarines Sur</span>
+      </div>
+      <div class="profile-row">
+        <span class="label">COURSE/YR/SEC</span>
+        <span class="value">BSIT – 2D</span>
+      </div>
+      <div class="profile-row">
+        <span class="label">SCHOOL</span>
+        <span class="value">Partido State University</span>
+      </div>
+      <div class="profile-row">
+        <span class="label">SEM / A.Y.</span>
+        <span class="value">2nd Sem / 2025–2026</span>
+      </div>
+      <div class="profile-row">
+        <span class="label">SUBJECT</span>
+        <span class="value">IPT 1 – Integrative Programming and Technology</span>
+      </div>
+      <div class="profile-row">
+        <span class="label">INSTRUCTOR</span>
+        <span class="value">Arjay F. Abio</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-title">
+    <h1>Interactive Canvas: Create, Move, Resize, Delete Circles</h1>
+    <p>Click blank space to add · Click circle to select · Drag to move · Scroll to resize · Delete key to remove</p>
+  </div>
+
+  <div class="controls">
+    <div class="kbd-hint"><span>Click</span> blank → add circle</div>
+    <div class="kbd-hint"><span>Click</span> circle → select (red)</div>
+    <div class="kbd-hint"><span>Drag</span> selected → move</div>
+    <div class="kbd-hint"><span>Scroll</span> → resize</div>
+    <div class="kbd-hint"><span>Delete</span> → remove</div>
+  </div>
+
+  <div class="canvas-wrapper">
+    <canvas id="myCanvas" width="760" height="420"></canvas>
+  </div>
+
+  <div class="status-bar">
+    <div class="stat">Circles: <span class="stat-val" id="circleCount">0</span></div>
+    <div class="stat">Selected: <span class="stat-val" id="selectedInfo">none</span></div>
+    <div class="stat" id="statusMsg"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
